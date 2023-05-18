@@ -70,11 +70,9 @@ module.exports.dislikeCard = (req, res, next) => {
     { new: true },
   )
     .then((card) => {
-      if (!card) {
-        // eslint-disable-next-line no-undef
-        throw new NotFoundError('Пользователь не найден');
-      }
-      res.send({ data: card });
+      if (card) return res.send({ data: card });
+      // eslint-disable-next-line no-undef
+      throw new NotFoundError('Пользователь не найден');
     })
     .catch((err) => {
       if (err.name === 'CastError') {
