@@ -43,6 +43,10 @@ module.exports.createUser = (req, res) => {
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
   const { userId } = req.user._id;
+  if (!name || !about) {
+    res.status(400).send({ message: 'Некорректные данные профиля' });
+    return;
+  }
   User.findByIdAndUpdate(
     userId,
     {
@@ -52,13 +56,15 @@ module.exports.updateProfile = (req, res) => {
     {
       new: true,
     },
+  )
+    .then((user) => res.status(200).send(user))
   // eslint-disable-next-line consistent-return
-  ).catch((err) => {
-    if (err.name === 'CastError') {
-      return res.status(400).send({ message: 'Некорректный ID пользователя' });
-    }
-    res.status(500).send({ message: 'Произошла ошибка' });
-  });
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Некорректный ID пользователя' });
+      }
+      res.status(500).send({ message: 'Произошла ошибка' });
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
