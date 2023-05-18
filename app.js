@@ -4,6 +4,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 // пакет celebrate
 const { errors } = require('celebrate');
+
+// eslint-disable-next-line import/no-unresolved, import/no-extraneous-dependencies
+const helmet = require('helmet');
 // Здесь мы подключаем модуль router, содержит определение всех маршрутов для нашего приложения.
 const router = require('./routes/users');
 const routerCard = require('./routes/cards');
@@ -13,6 +16,7 @@ const { PORT = 3000 } = process.env;
 // Здесь мы создаем экземпляр приложения Express и настраиваем middleware для обработки JSON-данных.
 const app = express();
 app.use(express.json());
+app.use(helmet());
 
 // celebrate error handler
 app.use(errors());
@@ -28,6 +32,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/', router);
-app.use('/cards', routerCard);
+app.use('/cards', routerCard, (req, res) => { res.status(404).send({ message: '404 Not Found' }); });
 
 app.listen(PORT);
