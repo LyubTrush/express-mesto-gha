@@ -63,7 +63,7 @@ module.exports.likeCard = (req, res) => {
     });
 };
 
-module.exports.dislikeCard = (req, res, next) => {
+module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -72,15 +72,15 @@ module.exports.dislikeCard = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
-        return res.status(400).send({ message: 'Карточка не найдена' });
+        return res.status(404).send({ message: 'Карточка не найдена' });
       }
       res.send({ data: card });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
-        // eslint-disable-next-line no-undef
-        return next(new BadRequestError('Карточка не найдена'));
+        return res.status(400).send({ message: 'Передан некорректный id карточки' });
       }
-      return next(err);
+      res.status(500).send({ message: 'Произошла ошибка' });
     });
 };
