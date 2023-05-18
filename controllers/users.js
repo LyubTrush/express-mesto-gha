@@ -42,7 +42,7 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
-  const { userId } = req.user._id;
+  const userId = req.user._id;
   if (!name || !about) {
     res.status(400).send({ message: 'Некорректные данные профиля' });
     return;
@@ -87,14 +87,13 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       // eslint-disable-next-line no-undef
-      if (err instanceof CastError) {
-        res.status(400).send({ message: 'Некорректные данные' });
+      if (err.message === 'CastError') {
+        res.status(400).send({ message: 'Невалидные данные для обновления аватара.' });
         return;
       }
 
-      // eslint-disable-next-line no-undef
-      if (err instanceof DocumentNotFoundError) {
-        res.status(404).send({ message: 'Пользователь не обнаружен' });
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Нет пользователя с таким id.' });
         return;
       }
 
