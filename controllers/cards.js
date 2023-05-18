@@ -63,7 +63,7 @@ module.exports.likeCard = (req, res) => {
     });
 };
 
-function dislikeCard(req, res, next) {
+module.exports.dislikeCard(req, res, next) {
   const { cardId } = req.params;
   const { userId } = req.user;
 
