@@ -26,12 +26,18 @@ module.exports.getUserById = (req, res) => {
     });
 };
 
+// eslint-disable-next-line consistent-return
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((user) => res.status(201).send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Некорректные данные пользователя' });
+        return;
+      }
+      res.status(500).send({ message: 'Произошла ошибка' });
+    });
 };
 
 module.exports.updateProfile = (req, res) => {

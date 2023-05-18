@@ -8,7 +8,7 @@ const { errors } = require('celebrate');
 const router = require('./routes/users');
 const routerCard = require('./routes/cards');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 // Здесь мы создаем экземпляр приложения Express и настраиваем middleware для обработки JSON-данных.
 const app = express();
