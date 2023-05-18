@@ -55,9 +55,16 @@ module.exports.updateProfile = (req, res) => {
     },
     {
       new: true,
+      runValidators: true,
     },
   )
-    .then((user) => res.status(200).send(user))
+    // eslint-disable-next-line consistent-return
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      res.send({ data: user });
+    })
   // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -70,9 +77,22 @@ module.exports.updateProfile = (req, res) => {
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   const { userId } = req.user._id;
-  User.findByIdAndUpdate(userId, { avatar }, { new: true })
+  if (!avatar) {
+    res.status(400).send({ message: 'Некорректные данные при обновлении аватара.' });
+    return;
+  }
+  User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => res.status(200).send(user))
-    .catch(() => {
+    .catch((err) => {
+      if (err.message === 'CastError') {
+        res.status(400).send({ message: 'Некоректные данные' });
+        return;
+      }
+
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Пользователь не обнаружен' });
+        return;
+      }
       res.status(500).send({ message: 'Произошла ошибка' });
     });
 };
