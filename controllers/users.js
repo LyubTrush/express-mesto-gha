@@ -58,6 +58,7 @@ module.exports.updateProfile = (req, res) => {
       runValidators: true,
     },
   )
+    .orFail()
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
@@ -82,6 +83,7 @@ module.exports.updateAvatar = (req, res) => {
     return;
   }
   User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
+    .orFail()
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       // eslint-disable-next-line no-undef
