@@ -64,33 +64,23 @@ module.exports.likeCard = (req, res) => {
 };
 
 module.exports.dislikeCard = (req, res, next) => {
-  const { cardId } = req.params;
-  const { userId } = req.user;
-
-  Card
-    .findByIdAndUpdate(
-      cardId,
-      {
-        $pull: {
-          likes: userId,
-        },
-      },
-      {
-        new: true,
-      },
-    )
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  )
+    // eslint-disable-next-line consistent-return
     .then((card) => {
-      if (card) return res.send({ data: card });
-
-      // eslint-disable-next-line no-undef
-      throw new NotFoundError('Данные по указанному id не найдены');
+      if (!card) {
+        return res.status(404).send({ message: 'Карточка не найдена' });
+      }
+      res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'CastError') {
         // eslint-disable-next-line no-undef
-        next(new InaccurateDataError('Переданы некорректные данные при снятии лайка карточки'));
-      } else {
-        next(err);
+        return next(new BadRequestError('Карточка не найдена'));
       }
+      return next(err);
     });
 };
