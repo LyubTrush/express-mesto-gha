@@ -18,9 +18,9 @@ router.get('/users/:userId', getUserById);
 router.post('/users', createUser);
 
 // Обновление профиля
-router.patch('/me', updateProfile);
+router.patch('/users/me', updateProfile);
 
 // Обновление аватара
-router.patch('/me/avatar', updateAvatar);
+router.patch('/users/me/avatar', updateAvatar);
 
 module.exports = router;
