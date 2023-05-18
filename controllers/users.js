@@ -1,26 +1,28 @@
 // //const userSchema = require('../models/user');
-const User = require("../models/user");
+const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 module.exports.getUserById = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
+  // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "Пользователь не найден" });
+        return res.status(404).send({ message: 'Пользователь не найден' });
       }
       res.send({ data: user });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
-      if (err.name === "CastError") {
-        return res.status(400).send({ message: "Некорректный ID" });
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Некорректный ID' });
       }
-      res.status(500).send({ message: "Произошла ошибка" });
+      res.status(500).send({ message: 'Произошла ошибка' });
     });
 };
 
@@ -29,7 +31,7 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.updateProfile = (req, res) => {
@@ -43,12 +45,13 @@ module.exports.updateProfile = (req, res) => {
     },
     {
       new: true,
-    }
+    },
+  // eslint-disable-next-line consistent-return
   ).catch((err) => {
-    if (err.name === "CastError") {
-      return res.status(400).send({ message: "Некорректный ID пользователя" });
+    if (err.name === 'CastError') {
+      return res.status(400).send({ message: 'Некорректный ID пользователя' });
     }
-    res.status(500).send({ message: "Произошла ошибка" });
+    res.status(500).send({ message: 'Произошла ошибка' });
   });
 };
 
@@ -57,7 +60,7 @@ module.exports.updateAvatar = (req, res) => {
   const { userId } = req.user._id;
   User.findByIdAndUpdate(userId, { avatar }, { new: true })
     .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      res.status(500).send({ message: "Произошла ошибка" });
+    .catch(() => {
+      res.status(500).send({ message: 'Произошла ошибка' });
     });
 };
