@@ -47,14 +47,18 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
-        // eslint-disable-next-line no-undef
-        throw new NotFoundError('Пользователь не найден');
+        return res.status(404).send({ message: 'Карточка не найдена' });
       }
       res.send({ data: card });
     })
-    .catch(() => {
+    // eslint-disable-next-line consistent-return
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Передан некорректный id карточки' });
+      }
       res.status(500).send({ message: 'Произошла ошибка' });
     });
 };
