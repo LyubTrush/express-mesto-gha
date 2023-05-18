@@ -76,7 +76,7 @@ module.exports.updateProfile = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  const { userId } = req.user._id;
+  const userId = req.user._id;
   if (!avatar) {
     res.status(400).send({ message: 'Некорректные данные при обновлении аватара.' });
     return;
@@ -84,15 +84,18 @@ module.exports.updateAvatar = (req, res) => {
   User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.message === 'CastError') {
-        res.status(400).send({ message: 'Некоректные данные' });
+      // eslint-disable-next-line no-undef
+      if (err instanceof CastError) {
+        res.status(400).send({ message: 'Некорректные данные' });
         return;
       }
 
-      if (err.name === 'DocumentNotFoundError') {
+      // eslint-disable-next-line no-undef
+      if (err instanceof DocumentNotFoundError) {
         res.status(404).send({ message: 'Пользователь не обнаружен' });
         return;
       }
+
       res.status(500).send({ message: 'Произошла ошибка' });
     });
 };
