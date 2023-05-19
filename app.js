@@ -21,21 +21,6 @@ app.use(helmet());
 // celebrate error handler
 app.use(errors());
 
-// Обработчик маршрута для неправильных путей
-app.use((req, res, next) => {
-  const error = new Error('Страница не найдена');
-  error.status = 404;
-  next(error);
-});
-
-// Обработчик ошибок
-app.use((err, req, res) => {
-  res.status(err.status || 500).json({
-    error: {
-      message: err.message || 'Произошла ошибка',
-    },
-  });
-});
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 app.use((req, res, next) => {
