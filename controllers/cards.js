@@ -36,7 +36,11 @@ module.exports.deleteCard = (req, res) => {
         res.send({ data: card });
       }
     })
-    .catch(() => {
+    // eslint-disable-next-line consistent-return
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Передан некорректный id карточки' });
+      }
       res.status(500).send({ message: 'Произошла ошибка' });
     });
 };
