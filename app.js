@@ -31,15 +31,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// Обработчик ошибок
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500 ? 'На сервере произошла ошибка.' : message,
-    });
-
+  res.status(err.status || 500).json({
+    error: {
+      message: err.message || 'Произошла ошибка',
+    },
+  });
   next();
 });
 app.use('/', router);
