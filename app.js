@@ -33,11 +33,8 @@ app.use((req, res, next) => {
 
 app.use('/', router);
 app.use('/cards', routerCard);
-// Обработчик маршрута для неправильных путей
-app.use((req, res, next) => {
-  const error = new Error('Страница не найдена');
-  error.status = 404;
-  next(error);
+app.use('/*', (req, res) => {
+  res.status(404)
+    .send({ message: '404: страница не существует ' });
 });
-
 app.listen(PORT);
