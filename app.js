@@ -32,6 +32,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/', router);
-app.use('/cards', routerCard, (req, res) => { res.status(404).send({ message: '404 Not Found' }); });
+app.use('/cards', routerCard);
 
 app.listen(PORT);

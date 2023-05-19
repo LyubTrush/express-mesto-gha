@@ -76,11 +76,11 @@ module.exports.dislikeCard = (req, res, next) => {
       }
       res.send({ data: card });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
-        // eslint-disable-next-line no-undef
-        return next(new BadRequestError('Карточка не найдена'));
+        return res.status(400).send({ message: 'Передан некорректный id карточки' });
       }
-      return next(err);
+      res.status(500).send({ message: 'Произошла ошибка' });
     });
 };
