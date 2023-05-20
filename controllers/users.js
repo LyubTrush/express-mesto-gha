@@ -64,7 +64,6 @@ module.exports.updateProfile = (req, res) => {
       runValidators: true,
     },
   )
-    .orFail()
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
@@ -76,6 +75,10 @@ module.exports.updateProfile = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(HTTP_BAD_REQUEST).send({ message: 'Некорректный ID пользователя' });
+      }
+      // eslint-disable-next-line no-undef
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        return res.status(HTTP_NOT_FOUND).send({ message: 'Пользователь не найден' });
       }
       res.status(HTTP_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
