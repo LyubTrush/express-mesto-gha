@@ -17,9 +17,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 app.use(express.json());
 app.use(helmet());
-
-// celebrate error handler
-app.use(errors());
+const HTTP_NOT_FOUND = 404;
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
@@ -34,7 +32,11 @@ app.use((req, res, next) => {
 app.use('/', router);
 app.use('/cards', routerCard);
 app.use('/*', (req, res) => {
-  res.status(404)
+  res.status(HTTP_NOT_FOUND)
     .send({ message: '404: страница не существует ' });
 });
+
+// celebrate error handler
+app.use(errors());
+
 app.listen(PORT);
