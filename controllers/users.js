@@ -64,7 +64,6 @@ module.exports.updateProfile = (req, res) => {
       runValidators: true,
     },
   )
-    .orFail()
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
