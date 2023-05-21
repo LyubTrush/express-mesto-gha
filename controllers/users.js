@@ -73,8 +73,11 @@ module.exports.updateProfile = (req, res) => {
     })
   // eslint-disable-next-line consistent-return
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'CastError') {
         return res.status(HTTP_BAD_REQUEST).send({ message: 'Некорректный ID пользователя' });
+      }
+      if (err.name === 'ValidationError') {
+        return res.status(HTTP_BAD_REQUEST).send({ message: 'Некорректные данные пользователя' });
       }
       res.status(HTTP_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
