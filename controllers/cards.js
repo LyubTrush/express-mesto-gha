@@ -41,7 +41,15 @@ module.exports.deleteCard = (req, res, next) => {
       return res.send({ data: card });
     })
     // eslint-disable-next-line consistent-return
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new BadRequestError('Передан некорректный id карточки'));
+      }
+      if (err.name === 'DocumentNotFoundError') {
+        return next(new NotFoundError('Карточка не найдена.'));
+      }
+      return next(err);
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
