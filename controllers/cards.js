@@ -29,25 +29,18 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  const userId = req.user._id;
-  Card.findByIdAndRemove(cardId)
+
+  Card.findById(cardId)
     .then((card) => {
-      Card.findById(cardId).populate('owner');
       if (!card) {
-        throw new NotFoundError('Карточка не найдена');
+        throw new NotFoundError('User cannot be found');
       }
-      if (card.owner.toString() !== userId) {
-        throw new ForbiddenError('Карточка принадлежит другому пользователю');
+      if (!card.owner.toString() !== req.user._id) {
+        return next(new ForbiddenError('Card cannot be deleted'));
       }
-      return res.send({ data: card });
+      return card.deleteOne().then(() => res.send({ message: 'Card was deleted' }));
     })
-    // eslint-disable-next-line consistent-return
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Передан некорректный id карточки'));
-      }
-      return next(err);
-    });
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {
