@@ -19,7 +19,7 @@ const {
   createUser,
 } = require('./controllers/users');
 
-const { PORT = 3006 } = process.env;
+const { PORT = 3000 } = process.env;
 
 // Здесь мы создаем экземпляр приложения Express и настраиваем middleware для обработки JSON-данных.
 const app = express();
