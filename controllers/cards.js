@@ -29,12 +29,13 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
+  const userId = req.user._id;
   Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка не найдена');
       }
-      if (card.owner.toString() !== cardId) {
+      if (card.owner.toString() !== userId) {
         throw new ForbiddenError('Карточка принадлежит другому пользователю');
       }
       return res.send({ data: card });
