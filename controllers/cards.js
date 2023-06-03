@@ -1,18 +1,15 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
+const BadRequestError = require('../errors/BadRequestError');
 
-// const HTTP_OK = 200;
-const HTTP_CREATED = 201;
-const HTTP_NOT_FOUND = 404;
-const HTTP_BAD_REQUEST = 400;
-const HTTP_INTERNAL_SERVER_ERROR = 500;
-
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res.status(HTTP_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({
@@ -20,24 +17,25 @@ module.exports.createCard = (req, res) => {
     link,
     owner,
   })
-    .then((card) => res.status(HTTP_CREATED).send(card))
+    .then((card) => res.status(201).send(card))
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res
-          .status(HTTP_BAD_REQUEST)
-          .send({ message: 'Переданы некорректные данные' });
+        return next(new BadRequestError('Переданы некорректные данные'));
       }
-      res.status(HTTP_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        res.status(HTTP_NOT_FOUND).send({ message: ' Карточка не найдена ' });
+        throw new NotFoundError('Карточка не найдена');
+      }
+      if (card.owner.toString() !== req.user._id) {
+        throw new ForbiddenError('Карточка принадлежит другому пользователю');
       } else {
         res.send({ data: card });
       }
@@ -45,13 +43,13 @@ module.exports.deleteCard = (req, res) => {
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(HTTP_BAD_REQUEST).send({ message: 'Передан некорректный id карточки' });
+        return next(new BadRequestError('Передан некорректный id карточки'));
       }
-      res.status(HTTP_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -60,20 +58,20 @@ module.exports.likeCard = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
-        return res.status(HTTP_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Карточка не найдена');
       }
       res.send({ data: card });
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(HTTP_BAD_REQUEST).send({ message: 'Передан некорректный id карточки' });
+        return next(new BadRequestError('Передан некорректный id карточки'));
       }
-      res.status(HTTP_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -82,15 +80,15 @@ module.exports.dislikeCard = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
-        return res.status(HTTP_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Карточка не найдена');
       }
       res.send({ data: card });
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(HTTP_BAD_REQUEST).send({ message: 'Передан некорректный id карточки' });
+        return next(new BadRequestError('Передан некорректный id карточки'));
       }
-      res.status(HTTP_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };

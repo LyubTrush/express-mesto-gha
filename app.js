@@ -10,33 +10,41 @@ const helmet = require('helmet');
 // Здесь мы подключаем модуль router, содержит определение всех маршрутов для нашего приложения.
 const router = require('./routes/users');
 const routerCard = require('./routes/cards');
+const NotFoundError = require('./errors/BadRequestError');
+const errorHandler = require('./middlewares/errorHandler');
+const { loginValidate, createUserValidate } = require('./middlewares/validation');
+const auth = require('./middlewares/auth');
+const {
+  login,
+  createUser,
+} = require('./controllers/users');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3006 } = process.env;
 
 // Здесь мы создаем экземпляр приложения Express и настраиваем middleware для обработки JSON-данных.
 const app = express();
 app.use(express.json());
 app.use(helmet());
-const HTTP_NOT_FOUND = 404;
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64652cb234ebe63e152b3c8e', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
-
-  next();
-});
 
 app.use('/', router);
 app.use('/cards', routerCard);
-app.use('/*', (req, res) => {
-  res.status(HTTP_NOT_FOUND)
-    .send({ message: '404: страница не существует ' });
+app.post('/signin', loginValidate, login);
+app.post('/signup', createUserValidate, createUser);
+// авторизация
+// eslint-disable-next-line no-undef
+app.use(auth);
+app.use('/*', (req, res, next) => {
+  next(new NotFoundError('404: страница не существует'));
 });
 
 // celebrate error handler
 app.use(errors());
 
-app.listen(PORT);
+app.use(errorHandler);
+
+app.listen(PORT, () => {
+  console.log(`App started on port ${PORT}`);
+});
