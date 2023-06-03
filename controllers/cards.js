@@ -32,6 +32,7 @@ module.exports.deleteCard = (req, res, next) => {
   const userId = req.user._id;
   Card.findByIdAndRemove(cardId)
     .then((card) => {
+      Card.findById(cardId).populate('owner');
       if (!card) {
         throw new NotFoundError('Карточка не найдена');
       }
