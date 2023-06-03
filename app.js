@@ -28,14 +28,12 @@ app.use(helmet());
 
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-
-app.use('/', router);
-app.use('/cards', routerCard);
 app.post('/signin', loginValidate, login);
 app.post('/signup', createUserValidate, createUser);
-// авторизация
-// eslint-disable-next-line no-undef
 app.use(auth);
+app.use('/', router);
+app.use('/cards', routerCard);
+
 app.use('/*', (req, res, next) => {
   next(new NotFoundError('404: страница не существует'));
 });
