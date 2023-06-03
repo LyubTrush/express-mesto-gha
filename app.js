@@ -29,8 +29,8 @@ app.use(helmet());
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
-app.use('/', auth, router);
-app.use('/cards', auth, routerCard);
+app.use('/', router);
+app.use('/cards', routerCard);
 app.post('/signin', loginValidate, login);
 app.post('/signup', createUserValidate, createUser);
 // авторизация
