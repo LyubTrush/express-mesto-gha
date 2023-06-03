@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const { Schema } = mongoose;
 
@@ -71,10 +72,7 @@ userSchema.statics.findUserByCredentials = function _(email, password) {
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
-          if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
-          }
-
+          if (!matched) return Promise.reject(new UnauthorizedError('Неправильные логин или пароль'));
           return user; // теперь user доступен
         });
     });

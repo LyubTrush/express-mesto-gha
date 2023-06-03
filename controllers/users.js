@@ -8,7 +8,6 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -55,7 +54,7 @@ module.exports.getUserById = (req, res, next) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -67,10 +66,7 @@ module.exports.login = (req, res) => {
       // вернём токен
       res.send({ token });
     })
-    .catch(() => {
-      // ошибка аутентификации
-      throw new UnauthorizedError('Неправильные логин или пароль');
-    });
+    .catch(next);
 };
 
 // eslint-disable-next-line consistent-return
