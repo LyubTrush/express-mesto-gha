@@ -36,9 +36,8 @@ module.exports.deleteCard = (req, res, next) => {
       }
       if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Карточка принадлежит другому пользователю');
-      } else {
-        res.send({ data: card });
       }
+      return res.send({ data: card });
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {
