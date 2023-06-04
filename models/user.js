@@ -10,7 +10,6 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
   name: {
     type: String,
-    required: true,
     default: 'Жак-Ив Кусто',
     minlength: 2,
     maxlength: 30,
@@ -21,7 +20,6 @@ const userSchema = new Schema({
   },
   about: {
     type: String,
-    required: true,
     default: 'Исследователь',
     minlength: 2,
     maxlength: 30,
@@ -32,7 +30,6 @@ const userSchema = new Schema({
   },
   avatar: {
     type: String,
-    required: true,
     validate: {
       validator: (url) => validator.isURL(url),
       message: 'Неправильный формат ссылки',
@@ -52,7 +49,6 @@ const userSchema = new Schema({
     type: String,
     required: true,
     select: false,
-    minlength: 8,
     validate: {
       validator: (value) => value.length >= 8,
       message: 'Пароль должен содержать минимум 8 символов',

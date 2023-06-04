@@ -30,7 +30,7 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
-  Card.findByIdAndRemove(cardId)
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка не найдена');
@@ -38,9 +38,10 @@ module.exports.deleteCard = (req, res, next) => {
       if (card.owner.toString() !== userId) {
         throw new ForbiddenError('Карточка принадлежит другому пользователю');
       }
-      return res.send({ data: card });
+      card.deleteOne()
+        .then(() => res.send({ message: 'Card is deleted' }))
+        .catch(next);
     })
-    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Передан некорректный id карточки'));
