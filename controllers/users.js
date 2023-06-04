@@ -114,9 +114,6 @@ module.exports.createUser = (req, res, next) => {
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   const userId = req.user._id;
-  if (!name || !about) {
-    return next(new BadRequestError('Некорректные данные пользователя'));
-  }
   User.findByIdAndUpdate(
     userId,
     {
