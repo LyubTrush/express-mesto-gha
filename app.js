@@ -10,7 +10,7 @@ const helmet = require('helmet');
 // Здесь мы подключаем модуль router, содержит определение всех маршрутов для нашего приложения.
 const router = require('./routes/users');
 const routerCard = require('./routes/cards');
-const NotFoundError = require('./errors/BadRequestError');
+const NotFoundError = require('./errors/NotFoundError');
 const errorHandler = require('./middlewares/errorHandler');
 const { loginValidate, createUserValidate } = require('./middlewares/validation');
 const auth = require('./middlewares/auth');
