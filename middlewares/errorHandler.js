@@ -1,7 +1,6 @@
 module.exports = (err, req, res, next) => {
-  const { status = 500, message = 'На сервере произошла ошибка' } = err;
-
-  res.status(status).send({ message });
-
+  const statusCode = err.statusCode || 500;
+  const message = statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
+  res.status(statusCode).send({ message });
   next();
 };
